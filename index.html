@@ -17,7 +17,6 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .bg-pattern { background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-        /* Signature Canvas Style */
         canvas { touch-action: none; background: #fff; border: 2px dashed #ccc; border-radius: 8px; }
     </style>
 </head>
@@ -25,13 +24,11 @@
 
     <!-- BRANDING BAR -->
     <div class="bg-white px-4 py-2 flex justify-between items-center border-b border-gray-200 shrink-0 pt-safe-top">
-        <!-- RTLB Cluster 21 Logo -->
         <img src="https://i.imgur.com/PhEVtWs.png" 
              onerror="this.style.display='none'; document.getElementById('rtlb-text').style.display='block'"
              alt="RTLB Cluster 21" class="h-10 w-auto object-contain">
         <span id="rtlb-text" class="hidden font-bold text-emerald-800 text-sm">RTLB Cluster 21</span>
 
-        <!-- Aroha ki ngā Tamariki Logo -->
         <img src="https://i.imgur.com/7yexsLE.png" 
              onerror="this.style.display='none'; document.getElementById('aroha-text').style.display='block'"
              alt="Aroha ki ngā Tamariki" class="h-10 w-auto object-contain">
@@ -41,7 +38,6 @@
     <!-- HEADER -->
     <header class="bg-slate-900 text-white p-4 shadow-lg flex justify-between items-center z-10 shrink-0">
         <div class="flex items-center gap-3">
-            <!-- Te Whare o Oro Icon (Circular) -->
             <img src="https://i.imgur.com/IpyLIV9.jpeg" alt="Te Whare o Oro" class="w-10 h-10 rounded-full border-2 border-emerald-500 object-cover">
             <h1 class="text-lg font-bold tracking-tight leading-tight">
                 He Pikorua in Action<br>
@@ -55,7 +51,9 @@
     </header>
 
     <!-- MAIN CONTENT -->
-    <main id="app-content" class="flex-1 overflow-y-auto bg-pattern relative pb-20"></main>
+    <main id="app-content" class="flex-1 overflow-y-auto bg-pattern relative pb-20">
+        <!-- Content injected here -->
+    </main>
 
     <!-- FOOTER NAV -->
     <footer id="footer-nav" class="bg-white border-t border-gray-200 p-2 hidden shrink-0 grid grid-cols-4 gap-1 text-xs text-center pb-safe-bottom z-20"></footer>
@@ -110,7 +108,13 @@
                     </div>
                 </div>`).join('') : `<div class="text-center py-10 text-gray-400">No active cases.</div>`;
 
-            content.innerHTML = `<div class="p-4 fade-in max-w-md mx-auto"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-slate-800">${showArchived ? 'Closed' : 'Active'}</h2>${!showArchived ? `<button onclick="openModal()" class="bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-plus"></i></button>` : ''}</div>${listHtml}<div class="mt-8 text-center"><button onclick="toggleArchived()" class="text-xs font-bold text-slate-400 bg-slate-100 px-4 py-2 rounded-full">${showArchived ? 'Show Active' : 'Show Closed'}</button></div></div>`;
+            content.innerHTML = `
+                <div class="p-4 fade-in max-w-md mx-auto">
+                    <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-slate-800">${showArchived ? 'Closed' : 'Active'}</h2>${!showArchived ? `<button onclick="openModal()" class="bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-plus"></i></button>` : ''}</div>
+                    ${listHtml}
+                    <div class="mt-8 text-center"><button onclick="toggleArchived()" class="text-xs font-bold text-slate-400 bg-slate-100 px-4 py-2 rounded-full">${showArchived ? 'Show Active' : 'Show Closed'}</button></div>
+                    ${renderCopyright()}
+                </div>`;
         }
 
         function openCase(id) {
@@ -131,6 +135,7 @@
                         ${renderPhaseButton(id, '7. Whai Whakaaro', 'Post Data Scales', 'fa-chart-line', 'bg-cyan-50 text-cyan-700')}
                         ${renderPhaseButton(id, '8. Mana Motuhake', 'Closure Signatures', 'fa-file-signature', 'bg-slate-100 text-slate-700')}
                     </div>
+                    ${renderCopyright()}
                 </div>`;
         }
 
@@ -169,7 +174,7 @@
             const isConnected = settings.scriptUrl.length > 10;
             const btnAction = (phase.includes('Mana') || phase.includes('Waharoa')) ? `syncSignature('${phase}')` : `syncToDoc('${phase}')`;
 
-            content.innerHTML = `<div class="p-4 slide-in max-w-md mx-auto"><div class="flex items-center mb-4"><button onclick="openCase(${id})" class="mr-3 text-slate-500 p-2"><i class="fa-solid fa-arrow-left"></i></button><h2 class="font-bold text-lg truncate">${phase}</h2></div>${formHtml}<button id="sync-btn" onclick="${isConnected ? btnAction : 'openSettings()'}" class="mt-6 w-full ${isConnected ? 'bg-slate-900 text-white' : 'bg-gray-300 text-gray-500'} font-bold py-4 rounded-xl shadow-lg flex justify-center items-center"><i id="sync-icon" class="fa-solid ${isConnected ? 'fa-rotate' : 'fa-triangle-exclamation'} mr-2"></i> <span id="sync-text">${isConnected ? 'Sync to Doc' : 'Setup First'}</span></button></div>`;
+            content.innerHTML = `<div class="p-4 slide-in max-w-md mx-auto"><div class="flex items-center mb-4"><button onclick="openCase(${id})" class="mr-3 text-slate-500 p-2"><i class="fa-solid fa-arrow-left"></i></button><h2 class="font-bold text-lg truncate">${phase}</h2></div>${formHtml}<button id="sync-btn" onclick="${isConnected ? btnAction : 'openSettings()'}" class="mt-6 w-full ${isConnected ? 'bg-slate-900 text-white' : 'bg-gray-300 text-gray-500'} font-bold py-4 rounded-xl shadow-lg flex justify-center items-center"><i id="sync-icon" class="fa-solid ${isConnected ? 'fa-rotate' : 'fa-triangle-exclamation'} mr-2"></i> <span id="sync-text">${isConnected ? 'Sync to Doc' : 'Setup First'}</span></button>${renderCopyright()}</div>`;
 
             if (document.getElementById('sig-canvas')) initCanvas();
         }
@@ -246,6 +251,12 @@
         function archiveCase(id) { if(confirm("Archive?")) { cases.find(c=>c.id===id).status='archived'; saveData(); showHome(); }}
         function unarchiveCase(id) { cases.find(c=>c.id===id).status='active'; saveData(); showHome(); }
         function deleteCase(id) { if(confirm("Delete?")) { cases = cases.filter(c=>c.id!==id); saveData(); showHome(); }}
+        
+        // --- NEW COPYRIGHT HELPER ---
+        function renderCopyright() {
+            return `<div class="mt-8 mb-4 text-center"><p class="text-[10px] text-gray-400">&copy; Daelan Karangaroa, 2026.</p></div>`;
+        }
+
         showHome();
     </script>
 </body>
