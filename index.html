@@ -1,635 +1,230 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
-
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <title>He Pikorua Tracker</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <style>
-
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-
         .slide-in { animation: slideIn 0.3s ease-out forwards; }
-
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .bg-pattern {
-
-            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-
-            background-size: 20px 20px;
-
-        }
-
-        /* Custom scrollbar hiding */
-
+        .bg-pattern { background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-
+        /* Signature Canvas Style */
+        canvas { touch-action: none; background: #fff; border: 2px dashed #ccc; border-radius: 8px; }
     </style>
-
 </head>
-
 <body class="bg-gray-50 text-gray-800 h-screen flex flex-col overflow-hidden">
 
-
-
     <!-- HEADER -->
-
     <header class="bg-slate-900 text-white p-4 shadow-lg flex justify-between items-center z-10 shrink-0 pt-safe-top">
-
-        <div>
-
-            <h1 class="text-lg font-bold tracking-tight">He Pikorua <span class="text-emerald-400">Action</span></h1>
-
+        <div><h1 class="text-lg font-bold tracking-tight">He Pikorua <span class="text-emerald-400">Sync</span></h1></div>
+        <div class="flex gap-3">
+             <button onclick="openSettings()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-gear"></i></button>
+             <button onclick="showHome()" class="text-slate-300 hover:text-white"><i class="fa-solid fa-house fa-lg"></i></button>
         </div>
-
-        <button onclick="showHome()" class="text-slate-300 hover:text-white p-2"><i class="fa-solid fa-house fa-lg"></i></button>
-
     </header>
 
+    <!-- MAIN CONTENT -->
+    <main id="app-content" class="flex-1 overflow-y-auto bg-pattern relative pb-20"></main>
 
-
-    <!-- MAIN CONTENT AREA -->
-
-    <main id="app-content" class="flex-1 overflow-y-auto bg-pattern relative pb-20">
-
-        <!-- Views injected here -->
-
-    </main>
-
-
-
-    <!-- FOOTER NAVIGATION -->
-
-    <footer id="footer-nav" class="bg-white border-t border-gray-200 p-2 hidden shrink-0 grid grid-cols-4 gap-1 text-xs text-center pb-safe-bottom z-20">
-
-        <!-- Injected via JS -->
-
-    </footer>
-
-
+    <!-- FOOTER NAV -->
+    <footer id="footer-nav" class="bg-white border-t border-gray-200 p-2 hidden shrink-0 grid grid-cols-4 gap-1 text-xs text-center pb-safe-bottom z-20"></footer>
 
     <!-- ADD CASE MODAL -->
-
     <div id="add-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 fade-in">
-
         <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
-
-            <h3 class="text-lg font-bold mb-4">Add New Case</h3>
-
-            
-
-            <label class="text-xs font-bold text-gray-500 uppercase">Mokopuna Name</label>
-
-            <input type="text" id="new-name" placeholder="e.g. Hemi T." class="w-full mb-3 p-3 border rounded-lg bg-gray-50">
-
-            
-
-            <label class="text-xs font-bold text-gray-500 uppercase">Kura / School</label>
-
-            <input type="text" id="new-kura" placeholder="e.g. Nuhaka School" class="w-full mb-3 p-3 border rounded-lg bg-gray-50">
-
-            
-
-            <label class="text-xs font-bold text-blue-600 uppercase"><i class="fa-brands fa-google-drive mr-1"></i> Google Doc Link</label>
-
-            <input type="text" id="new-doc-link" placeholder="Paste Doc URL here..." class="w-full mb-4 p-3 border border-blue-200 rounded-lg bg-blue-50 text-sm">
-
-            
-
-            <div class="flex gap-2">
-
-                <button onclick="closeModal()" class="flex-1 py-3 rounded-lg bg-gray-200 font-bold text-gray-600">Cancel</button>
-
-                <button onclick="saveNewCase()" class="flex-1 py-3 rounded-lg bg-emerald-600 text-white font-bold">Save</button>
-
-            </div>
-
+            <h3 class="text-lg font-bold mb-4">Start New Case</h3>
+            <input type="text" id="new-name" placeholder="Mokopuna Name" class="w-full mb-3 p-3 border rounded-lg bg-gray-50">
+            <input type="text" id="new-kura" placeholder="Kura / School" class="w-full mb-3 p-3 border rounded-lg bg-gray-50">
+            <input type="text" id="new-doc-link" placeholder="Google Doc Link" class="w-full mb-4 p-3 border border-blue-200 rounded-lg bg-blue-50 text-sm">
+            <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 py-3 rounded-lg bg-gray-200 font-bold">Cancel</button><button onclick="saveNewCase()" class="flex-1 py-3 rounded-lg bg-emerald-600 text-white font-bold">Start</button></div>
         </div>
-
     </div>
 
-
-
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 fade-in">
+        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 class="text-lg font-bold mb-2">App Settings</h3>
+            <p class="text-xs text-gray-500 mb-4">Paste your Google Script URL below to enable Sync.</p>
+            <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/..." class="w-full mb-4 p-3 border rounded-lg bg-gray-50 text-xs">
+            <button onclick="saveSettings()" class="w-full py-3 rounded-lg bg-slate-800 text-white font-bold">Save Connection</button>
+            <button onclick="closeSettings()" class="w-full mt-2 py-2 text-gray-500 text-sm">Close</button>
+        </div>
+    </div>
 
     <script>
+        // --- DATA & STATE ---
+        let cases = (JSON.parse(localStorage.getItem('rtlb_cases_v5')) || []).map(c => ({...c, status: c.status || 'active'}));
+        let settings = JSON.parse(localStorage.getItem('rtlb_settings')) || { scriptUrl: '' };
+        let currentCaseId = null; 
+        let showArchived = false;
 
-        // --- DATA STORE ---
-
-        let cases = JSON.parse(localStorage.getItem('rtlb_cases_v2')) || [];
-
-        let currentCaseId = null;
-
-
-
-        function saveData() {
-
-            localStorage.setItem('rtlb_cases_v2', JSON.stringify(cases));
-
-        }
-
-
+        function saveData() { localStorage.setItem('rtlb_cases_v5', JSON.stringify(cases)); }
+        function saveSettings() { settings.scriptUrl = document.getElementById('script-url').value.trim(); localStorage.setItem('rtlb_settings', JSON.stringify(settings)); closeSettings(); alert("Saved!"); }
 
         // --- VIEWS ---
-
-
-
-        // 1. HOME DASHBOARD
-
         function showHome() {
-
             currentCaseId = null;
-
-            const content = document.getElementById('app-content');
-
             document.getElementById('footer-nav').classList.add('hidden');
-
+            const visibleCases = cases.filter(c => showArchived ? c.status === 'archived' : c.status === 'active');
+            const content = document.getElementById('app-content');
             
-
-            let caseListHtml = cases.length > 0 ? cases.map(c => `
-
-                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 mb-3 active:scale-95 transition-transform flex justify-between items-center group relative">
-
+            let listHtml = visibleCases.length > 0 ? visibleCases.map(c => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 ${showArchived ? 'border-gray-400 opacity-75' : 'border-emerald-500'} mb-3 active:scale-95 transition-transform flex justify-between items-center relative">
                     <div onclick="openCase(${c.id})" class="flex-1 cursor-pointer">
-
                         <h3 class="font-bold text-lg text-slate-800 truncate pr-2">${c.name}</h3>
-
-                        <p class="text-sm text-slate-500 truncate"><i class="fa-solid fa-school mr-1"></i> ${c.kura}</p>
-
-                        ${c.docUrl ? `<p class="text-xs text-blue-600 mt-1"><i class="fa-solid fa-link mr-1"></i> Linked to Doc</p>` : ''}
-
+                        <p class="text-sm text-slate-500 truncate">${c.kura}</p>
                     </div>
-
-                    <button onclick="deleteCase(${c.id})" class="text-gray-300 hover:text-red-500 p-3"><i class="fa-solid fa-trash"></i></button>
-
-                </div>
-
-            `).join('') : `<div class="text-center py-10 text-gray-400">No active cases.<br>Tap '+' to add a Mokopuna.</div>`;
-
-
-
-            content.innerHTML = `
-
-                <div class="p-4 fade-in max-w-md mx-auto">
-
-                    <div class="flex justify-between items-center mb-4">
-
-                        <h2 class="text-xl font-bold text-slate-800">My Caseload</h2>
-
-                        <button onclick="openModal()" class="bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"><i class="fa-solid fa-plus"></i></button>
-
+                    <div class="flex items-center">
+                        ${showArchived ? `<button onclick="unarchiveCase(${c.id})" class="text-emerald-500 p-3"><i class="fa-solid fa-box-open"></i></button><button onclick="deleteCase(${c.id})" class="text-red-300 p-3"><i class="fa-solid fa-trash"></i></button>` : `<button onclick="archiveCase(${c.id})" class="text-gray-300 p-3"><i class="fa-solid fa-box-archive text-xl"></i></button>`}
                     </div>
+                </div>`).join('') : `<div class="text-center py-10 text-gray-400">No active cases.</div>`;
 
-                    ${caseListHtml}
-
-                </div>
-
-            `;
-
+            content.innerHTML = `<div class="p-4 fade-in max-w-md mx-auto"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-slate-800">${showArchived ? 'Closed' : 'Active'}</h2>${!showArchived ? `<button onclick="openModal()" class="bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-plus"></i></button>` : ''}</div>${listHtml}<div class="mt-8 text-center"><button onclick="toggleArchived()" class="text-xs font-bold text-slate-400 bg-slate-100 px-4 py-2 rounded-full">${showArchived ? 'Show Active' : 'Show Closed'}</button></div></div>`;
         }
-
-
-
-        // 2. CASE VIEW
 
         function openCase(id) {
-
             currentCaseId = id;
-
             const c = cases.find(x => x.id === id);
-
-            if(!c) return showHome();
-
-            
-
-            const content = document.getElementById('app-content');
-
-            document.getElementById('footer-nav').classList.remove('hidden');
-
-            renderFooter(id);
-
-
-
-            const docButton = c.docUrl 
-
-                ? `<a href="${c.docUrl}" target="_blank" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-sm mb-4"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Open Google Doc</a>`
-
-                : `<button onclick="alert('No link saved! Delete and re-add this case to add a link.')" class="block w-full text-center bg-gray-200 text-gray-500 font-bold py-2 rounded-lg text-sm mb-4">No Doc Linked</button>`;
-
-
-
-            content.innerHTML = `
-
+            document.getElementById('footer-nav').classList.remove('hidden'); renderFooter(id);
+            document.getElementById('app-content').innerHTML = `
                 <div class="p-4 slide-in max-w-md mx-auto">
-
                     <div class="bg-slate-800 text-white p-4 rounded-xl mb-6 shadow-lg">
-
-                        <h2 class="text-2xl font-bold">${c.name}</h2>
-
-                        <p class="opacity-80 mb-2">${c.kura}</p>
-
-                        ${docButton}
-
+                        <h2 class="text-2xl font-bold">${c.name}</h2><p class="opacity-80">${c.kura}</p>
+                        ${c.docUrl ? `<div class="text-xs bg-emerald-500/20 inline-block px-2 py-1 rounded text-emerald-200 mt-2">Linked</div>` : `<div class="text-xs bg-red-500/20 inline-block px-2 py-1 rounded text-red-200 mt-2">No Doc</div>`}
                     </div>
-
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Workflow Phases</h3>
-
                     <div class="grid grid-cols-1 gap-3">
-
-                        ${renderPhaseButton(id, '1. Te Waharoa', 'Admin & Consent', 'fa-door-open', 'bg-blue-50 text-blue-700')}
-
+                        ${renderPhaseButton(id, '1. Te Waharoa', 'Admin & Consent Sig', 'fa-door-open', 'bg-blue-50 text-blue-700')}
                         ${renderPhaseButton(id, '3. Kohikohi', 'Te Whare o Oro Scan', 'fa-ear-listen', 'bg-purple-50 text-purple-700')}
-
                         ${renderPhaseButton(id, '5. Tātai', 'ReGrOWTH Plan', 'fa-compass-drafting', 'bg-orange-50 text-orange-700')}
-
                         ${renderPhaseButton(id, '6. Whakamahi', 'Log Contact/Mahi', 'fa-person-walking', 'bg-emerald-50 text-emerald-700')}
-
-                        ${renderPhaseButton(id, '7. Whai Whakaaro', 'Outcome Scales', 'fa-scale-balanced', 'bg-cyan-50 text-cyan-700')}
-
+                        ${renderPhaseButton(id, '7. Whai Whakaaro', 'Post Data Scales', 'fa-chart-line', 'bg-cyan-50 text-cyan-700')}
+                        ${renderPhaseButton(id, '8. Mana Motuhake', 'Closure Signatures', 'fa-file-signature', 'bg-slate-100 text-slate-700')}
                     </div>
-
-                </div>
-
-            `;
-
+                </div>`;
         }
-
-
 
         function renderPhaseButton(id, title, sub, icon, colorClass) {
-
-            return `
-
-            <button onclick="openForm(${id}, '${title}')" class="${colorClass} p-4 rounded-xl flex items-center shadow-sm text-left active:scale-95 transition-transform">
-
-                <div class="w-10 h-10 rounded-full bg-white/50 flex items-center justify-center mr-4 shrink-0">
-
-                    <i class="fa-solid ${icon} text-lg"></i>
-
-                </div>
-
-                <div>
-
-                    <div class="font-bold">${title}</div>
-
-                    <div class="text-xs opacity-80">${sub}</div>
-
-                </div>
-
-            </button>`;
-
+            return `<button onclick="openForm(${id}, '${title}')" class="${colorClass} p-4 rounded-xl flex items-center shadow-sm text-left active:scale-95 transition-transform"><div class="w-10 h-10 rounded-full bg-white/50 flex items-center justify-center mr-4 shrink-0"><i class="fa-solid ${icon} text-lg"></i></div><div><div class="font-bold">${title}</div><div class="text-xs opacity-80">${sub}</div></div></button>`;
         }
-
-
-
-        // 3. FORM VIEWS
 
         function openForm(id, phase) {
-
             currentCaseId = id;
-
             const content = document.getElementById('app-content');
-
             let formHtml = '';
 
-
-
             // --- PHASE 3: KOHIKOHI ---
-
             if (phase.includes('Kohikohi')) {
-
-                formHtml = `
-
-                    <div class="space-y-6">
-
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-
-                            <h4 class="font-bold text-slate-700 mb-2 border-b pb-1">1. Te Tūāpapa (Environment)</h4>
-
-                            <input type="text" id="p3_universal" class="w-full p-3 bg-gray-50 rounded mb-2 border-gray-200" placeholder="Te Matua (Universal)...">
-
-                            <input type="text" id="p3_targeted" class="w-full p-3 bg-gray-50 rounded border-gray-200" placeholder="Te Kāhui (Targeted)...">
-
-                        </div>
-
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-purple-100">
-
-                            <h4 class="font-bold text-purple-800 mb-2 border-b pb-1">2. Te Whare o Oro Scan</h4>
-
-                            <div class="space-y-3">
-
-                                ${renderCheckbox('p3_tuarongo', 'Pou Tuarongo (Safety)', 'red')}
-
-                                ${renderCheckbox('p3_tahu', 'Pou Tāhū (Rhythm)', 'yellow')}
-
-                                ${renderCheckbox('p3_tokomanawa', 'Pou Tokomanawa (Connect)', 'blue')}
-
-                                ${renderCheckbox('p3_kaiawha', 'Pou Kaiāwhā (Learning)', 'green')}
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                `;
-
+                formHtml = `<div class="space-y-4"><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold mb-2">1. Te Tūāpapa</h4><input type="text" id="p3_universal" class="w-full p-3 bg-gray-50 rounded mb-2" placeholder="Universal..."><input type="text" id="p3_targeted" class="w-full p-3 bg-gray-50 rounded" placeholder="Targeted..."></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold mb-2">2. Te Whare o Oro</h4>${renderCheckbox('p3_tuarongo', 'Pou Tuarongo (Safety)', 'red')}${renderCheckbox('p3_tahu', 'Pou Tāhū (Rhythm)', 'yellow')}${renderCheckbox('p3_tokomanawa', 'Pou Tokomanawa', 'blue')}${renderCheckbox('p3_kaiawha', 'Pou Kaiāwhā', 'green')}</div></div>`;
             } 
-
             // --- PHASE 5: TĀTAI ---
-
             else if (phase.includes('Tātai')) {
-
-                formHtml = `
-
-                    <div class="bg-white p-4 rounded-lg shadow-sm space-y-4">
-
-                        <h4 class="font-bold text-orange-700 mb-2 border-b pb-1">ReGrOWTH Planner</h4>
-
-                        <textarea id="p5_reality" class="w-full p-3 bg-gray-50 rounded border h-20" placeholder="Reality (Current State)..."></textarea>
-
-                        <input type="text" id="p5_goal" class="w-full p-3 bg-gray-50 rounded border" placeholder="Growing Goal...">
-
-                        <input type="text" id="p5_will" class="w-full p-3 bg-gray-50 rounded border" placeholder="Will (Who does what?)...">
-
-                        <textarea id="p5_tactics" class="w-full p-3 bg-gray-50 rounded border h-20" placeholder="Tactics (Strategies)..."></textarea>
-
-                    </div>
-
-                `;
-
-            }
-
-            // --- PHASE 6: WHAKAMAHI (Log) ---
-
-            else if (phase.includes('Whakamahi')) {
-
-                const today = new Date().toISOString().split('T')[0];
-
-                formHtml = `
-
-                    <div class="bg-white p-4 rounded-lg shadow-sm space-y-4">
-
-                        <h4 class="font-bold text-emerald-700 mb-2 border-b pb-1">Real-Time Contact Log</h4>
-
-                        <input type="date" id="p6_date" class="w-full p-3 bg-gray-50 rounded border" value="${today}">
-
-                        <select id="p6_type" class="w-full p-3 bg-gray-50 rounded border">
-
-                            <option>Kanohi ki te kanohi (Visit)</option>
-
-                            <option>Email / Phone</option>
-
-                            <option>Observation</option>
-
-                            <option>Coaching Session</option>
-
-                        </select>
-
-                        <textarea id="p6_notes" class="w-full p-3 bg-gray-50 rounded border h-24" placeholder="Mahi / Notes..."></textarea>
-
-                    </div>
-
-                `;
-
-            }
-
-            else {
-
-                formHtml = `<div class="p-8 text-center text-gray-400">Section available in full doc.</div>`;
-
-            }
-
-
-
-            content.innerHTML = `
-
-                <div class="p-4 slide-in max-w-md mx-auto">
-
-                    <div class="flex items-center mb-4">
-
-                        <button onclick="openCase(${id})" class="mr-3 text-slate-500 p-2"><i class="fa-solid fa-arrow-left"></i></button>
-
-                        <h2 class="font-bold text-lg text-slate-800 truncate">${phase}</h2>
-
-                    </div>
-
-                    ${formHtml}
-
-                    <button onclick="generateAndOpen('${phase}')" class="mt-6 w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform flex justify-center items-center">
-
-                        <i class="fa-solid fa-file-pen mr-2 text-emerald-400"></i> Update Doc
-
-                    </button>
-
-                    <p class="text-center text-xs text-gray-400 mt-2">Copies text & opens Google Docs</p>
-
-                </div>
-
-            `;
-
-        }
-
-
-
-        function renderCheckbox(id, label, color) {
-
-            return `
-
-            <div class="p-2 bg-${color}-50 rounded border border-${color}-100">
-
-                <label class="flex items-center cursor-pointer mb-2">
-
-                    <input type="checkbox" id="${id}" class="w-5 h-5 accent-${color}-600 mr-2">
-
-                    <span class="font-bold text-${color}-800 text-sm">${label}</span>
-
-                </label>
-
-                <input type="text" id="${id}_note" class="w-full p-2 text-sm bg-white border border-${color}-200 rounded" placeholder="Observed behaviour...">
-
-            </div>`;
-
-        }
-
-
-
-        // 4. GENERATE & OPEN DOC
-
-        function generateAndOpen(phase) {
-
-            let text = "";
-
-            const currentCase = cases.find(c => c.id === currentCaseId);
-
-
-
-            // Generate Text
-
-            if (phase.includes('Kohikohi')) {
-
-                text = `**PHASE 3: KOHIKOHI (Data Scan)**\n> **Universal:** ${getValue('p3_universal')}\n> **Targeted:** ${getValue('p3_targeted')}\n`;
-
-                if(getChecked('p3_tuarongo')) text += `> [x] Pou Tuarongo: ${getValue('p3_tuarongo_note')}\n`;
-
-                if(getChecked('p3_tahu')) text += `> [x] Pou Tāhū: ${getValue('p3_tahu_note')}\n`;
-
-                if(getChecked('p3_tokomanawa')) text += `> [x] Pou Tokomanawa: ${getValue('p3_tokomanawa_note')}\n`;
-
-                if(getChecked('p3_kaiawha')) text += `> [x] Pou Kaiāwhā: ${getValue('p3_kaiawha_note')}\n`;
-
+                formHtml = `<div class="bg-white p-4 rounded-lg shadow-sm space-y-4"><h4 class="font-bold text-orange-700">ReGrOWTH</h4><textarea id="p5_reality" class="w-full p-3 bg-gray-50 rounded h-20" placeholder="Reality..."></textarea><input type="text" id="p5_goal" class="w-full p-3 bg-gray-50 rounded" placeholder="Growing Goal..."><input type="text" id="p5_will" class="w-full p-3 bg-gray-50 rounded" placeholder="Will..."><textarea id="p5_tactics" class="w-full p-3 bg-gray-50 rounded h-20" placeholder="Tactics..."></textarea></div>`;
             } 
-
-            else if (phase.includes('Tātai')) {
-
-                text = `**PHASE 5: TĀTAI (ReGrOWTH)**\n> **Reality:** ${getValue('p5_reality')}\n> **Goal:** ${getValue('p5_goal')}\n> **Will:** ${getValue('p5_will')}\n> **Tactics:** ${getValue('p5_tactics')}`;
-
-            }
-
+            // --- PHASE 6: WHAKAMAHI (LOG) ---
             else if (phase.includes('Whakamahi')) {
-
-                text = `**LOG: ${getValue('p6_date')}**\n> **Type:** ${getValue('p6_type')}\n> **Notes:** ${getValue('p6_notes')}`;
-
+                const today = new Date().toISOString().split('T')[0];
+                formHtml = `<div class="bg-white p-4 rounded-lg shadow-sm space-y-4"><h4 class="font-bold text-emerald-700">Mahi Log</h4><input type="date" id="p6_date" class="w-full p-3 bg-gray-50 rounded" value="${today}"><select id="p6_type" class="w-full p-3 bg-gray-50 rounded"><option>Kanohi ki te kanohi</option><option>Email / Phone</option><option>Observation</option><option>Coaching</option></select><textarea id="p6_notes" class="w-full p-3 bg-gray-50 rounded h-24" placeholder="Mahi Notes..."></textarea><select id="p6_status" class="w-full p-3 bg-gray-50 rounded"><option>Completed</option><option>Follow-up</option></select></div>`;
+            } 
+            // --- PHASE 7: WHAI WHAKAARO (SCALES) ---
+            else if (phase.includes('Whai Whakaaro')) {
+                formHtml = `<div class="bg-white p-4 rounded-lg shadow-sm space-y-4"><h4 class="font-bold text-cyan-700">Post Data (1-10)</h4>${renderSlider('p7_ranga', 'Rangatiratanga (Self)')}${renderSlider('p7_mana', 'Manaakitanga (Others)')}${renderSlider('p7_tata', 'Tataritanga (Participating)')}${renderSlider('p7_whai', 'Whaiwahitanga (Achieving)')}${renderSlider('p7_teach', 'Teacher Confidence')}${renderSlider('p7_home', 'Home/School Partnership')}</div>`;
+            } 
+            // --- SIGNATURES (Phase 1 & 8) ---
+            else if (phase.includes('Mana Motuhake') || phase.includes('Te Waharoa')) {
+                const isConsent = phase.includes('Te Waharoa');
+                formHtml = `<div class="bg-white p-4 rounded-lg shadow-sm space-y-4"><h4 class="font-bold text-slate-700">${isConsent ? 'Consent' : 'Closure'} Signature</h4><input type="text" id="sig_name" class="w-full p-3 bg-gray-50 rounded" placeholder="Name of Signer (e.g. Parent/Tumuaki)"><div class="border-2 border-dashed border-gray-300 rounded-lg h-40 bg-white relative"><canvas id="sig-canvas" class="w-full h-full"></canvas><div class="absolute bottom-2 right-2 text-xs text-gray-400 pointer-events-none">Sign Above</div></div><button onclick="clearSig()" class="text-xs text-red-500 underline">Clear Signature</button></div>`;
             }
 
+            const isConnected = settings.scriptUrl.length > 10;
+            const btnAction = (phase.includes('Mana') || phase.includes('Waharoa')) ? `syncSignature('${phase}')` : `syncToDoc('${phase}')`;
 
+            content.innerHTML = `<div class="p-4 slide-in max-w-md mx-auto"><div class="flex items-center mb-4"><button onclick="openCase(${id})" class="mr-3 text-slate-500 p-2"><i class="fa-solid fa-arrow-left"></i></button><h2 class="font-bold text-lg truncate">${phase}</h2></div>${formHtml}<button id="sync-btn" onclick="${isConnected ? btnAction : 'openSettings()'}" class="mt-6 w-full ${isConnected ? 'bg-slate-900 text-white' : 'bg-gray-300 text-gray-500'} font-bold py-4 rounded-xl shadow-lg flex justify-center items-center"><i id="sync-icon" class="fa-solid ${isConnected ? 'fa-rotate' : 'fa-triangle-exclamation'} mr-2"></i> <span id="sync-text">${isConnected ? 'Sync to Doc' : 'Setup First'}</span></button></div>`;
 
-            // The Workflow: Copy -> Wait -> Open Doc
-
-            navigator.clipboard.writeText(text).then(() => {
-
-                if(currentCase && currentCase.docUrl) {
-
-                    // Try to open the doc
-
-                    window.location.href = currentCase.docUrl; 
-
-                } else {
-
-                    alert("Text copied! (No Doc Link saved to open)");
-
-                }
-
-            }).catch(() => {
-
-                alert("Error copying. Please manually select text.");
-
-            });
-
+            if (document.getElementById('sig-canvas')) initCanvas();
         }
 
+        // --- SIGNATURE CANVAS LOGIC ---
+        function initCanvas() {
+            const canvas = document.getElementById('sig-canvas');
+            canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+            const ctx = canvas.getContext('2d'); ctx.lineWidth = 2; ctx.strokeStyle = "#000";
+            let drawing = false;
+            function start(e) { drawing = true; ctx.beginPath(); draw(e); }
+            function end() { drawing = false; ctx.beginPath(); }
+            function draw(e) {
+                if (!drawing) return; e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+                ctx.lineTo(x, y); ctx.stroke();
+            }
+            canvas.addEventListener('mousedown', start); canvas.addEventListener('touchstart', start);
+            canvas.addEventListener('mouseup', end); canvas.addEventListener('touchend', end);
+            canvas.addEventListener('mousemove', draw); canvas.addEventListener('touchmove', draw);
+        }
+        function clearSig() { const c = document.getElementById('sig-canvas'); c.getContext('2d').clearRect(0,0,c.width,c.height); }
 
+        // --- SYNC LOGIC ---
+        function syncToDoc(phase) {
+            let data = {};
+            if (phase.includes('Kohikohi')) { data = { universal: getValue('p3_universal'), targeted: getValue('p3_targeted'), pou_summary: getPouSummary() }; } 
+            else if (phase.includes('Tātai')) { data = { reality: getValue('p5_reality'), goal: getValue('p5_goal'), will: getValue('p5_will'), tactics: getValue('p5_tactics') }; } 
+            else if (phase.includes('Whakamahi')) { data = { date: getValue('p6_date'), type: getValue('p6_type'), notes: getValue('p6_notes'), status: getValue('p6_status') }; } 
+            else if (phase.includes('Whai Whakaaro')) { data = { rangatiratanga: getValue('p7_ranga'), manaakitanga: getValue('p7_mana'), tataritanga: getValue('p7_tata'), whaiwahitanga: getValue('p7_whai'), teacher: getValue('p7_teach'), home: getValue('p7_home') }; phase = "Post Data"; }
+            sendSync(data, phase);
+        }
 
-        // HELPERS
+        function syncSignature(phase) {
+            const canvas = document.getElementById('sig-canvas');
+            const dataUrl = canvas.toDataURL("image/png");
+            const signer = document.getElementById('sig_name').value;
+            const type = phase.includes("Waharoa") ? "Consent" : "Closure";
+            if(!signer) return alert("Please enter the signer's name.");
+            sendSync({ type: type, signerName: signer, date: new Date().toLocaleDateString('en-NZ'), image: dataUrl }, "Signature Upload");
+        }
 
+        function sendSync(data, phase) {
+            const currentCase = cases.find(c => c.id === currentCaseId);
+            if(!currentCase.docUrl) return alert("No Google Doc linked!");
+            const btn = document.getElementById('sync-btn');
+            const txt = document.getElementById('sync-text');
+            btn.classList.replace('bg-slate-900', 'bg-emerald-600');
+            txt.innerText = "Syncing...";
+
+            fetch(settings.scriptUrl, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ docUrl: currentCase.docUrl, title: phase, data: data })
+            }).then(() => {
+                setTimeout(() => { txt.innerText = "Done!"; setTimeout(() => openCase(currentCaseId), 1000); }, 1000);
+            }).catch(err => { alert("Error: " + err); txt.innerText = "Retry"; });
+        }
+
+        // --- HELPERS ---
+        function renderCheckbox(id, l, c) { return `<div class="mt-2"><label class="flex items-center"><input type="checkbox" id="${id}" class="w-4 h-4 accent-${c}-600 mr-2"><span class="font-bold text-${c}-800 text-sm">${l}</span></label><input type="text" id="${id}_note" class="w-full mt-1 p-2 text-xs border rounded" placeholder="Observed..."></div>`; }
+        function renderSlider(id, l) { return `<div class="mb-3"><div class="flex justify-between text-xs font-bold mb-1"><span>${l}</span><span id="${id}_val">5</span></div><input type="range" id="${id}" min="1" max="10" value="5" class="w-full accent-cyan-600" oninput="document.getElementById('${id}_val').innerText=this.value"></div>`; }
         function getValue(id) { return document.getElementById(id) ? document.getElementById(id).value : ''; }
-
-        function getChecked(id) { return document.getElementById(id) ? document.getElementById(id).checked : false; }
-
-        
-
-        // MODAL FUNCTIONS
-
+        function getPouSummary() { let s=[]; if(document.getElementById('p3_tuarongo').checked) s.push("Tuarongo"); if(document.getElementById('p3_tahu').checked) s.push("Tāhū"); return s.join(', ') + " issues identified."; }
         function openModal() { document.getElementById('add-modal').classList.remove('hidden'); }
-
         function closeModal() { document.getElementById('add-modal').classList.add('hidden'); }
-
-        
-
-        function saveNewCase() {
-
-            const name = document.getElementById('new-name').value;
-
-            const kura = document.getElementById('new-kura').value;
-
-            const docUrl = document.getElementById('new-doc-link').value;
-
-            
-
-            if(name && kura) {
-
-                cases.push({ id: Date.now(), name, kura, docUrl, phase: 'Te Waharoa' });
-
-                saveData();
-
-                closeModal();
-
-                showHome();
-
-                document.getElementById('new-name').value = '';
-
-                document.getElementById('new-kura').value = '';
-
-                document.getElementById('new-doc-link').value = '';
-
-            }
-
-        }
-
-
-
-        function deleteCase(id) {
-
-            if(confirm("Delete this case?")) {
-
-                cases = cases.filter(c => c.id !== id);
-
-                saveData();
-
-                showHome();
-
-            }
-
-        }
-
-
-
-        function renderFooter(id) {
-
-            const footer = document.getElementById('footer-nav');
-
-            footer.innerHTML = `
-
-                <button onclick="openForm(${id}, '3. Kohikohi')" class="p-2 text-purple-700 hover:bg-purple-50 rounded flex flex-col items-center"><i class="fa-solid fa-ear-listen mb-1"></i> <span class="text-[10px]">Kohikohi</span></button>
-
-                <button onclick="openForm(${id}, '5. Tātai')" class="p-2 text-orange-700 hover:bg-orange-50 rounded flex flex-col items-center"><i class="fa-solid fa-compass-drafting mb-1"></i> <span class="text-[10px]">Tātai</span></button>
-
-                <button onclick="openForm(${id}, '6. Whakamahi')" class="p-2 text-emerald-700 hover:bg-emerald-50 rounded flex flex-col items-center"><i class="fa-solid fa-person-walking mb-1"></i> <span class="text-[10px]">Log</span></button>
-
-                <button onclick="openForm(${id}, '7. Whai Whakaaro')" class="p-2 text-cyan-700 hover:bg-cyan-50 rounded flex flex-col items-center"><i class="fa-solid fa-scale-balanced mb-1"></i> <span class="text-[10px]">Review</span></button>
-
-            `;
-
-        }
-
-
-
-        // Init
-
+        function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); document.getElementById('script-url').value = settings.scriptUrl; }
+        function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
+        function renderFooter(id) { document.getElementById('footer-nav').innerHTML = `<button onclick="openForm(${id}, '3. Kohikohi')" class="p-2 text-purple-700"><i class="fa-solid fa-ear-listen block mb-1"></i>Kohikohi</button><button onclick="openForm(${id}, '6. Whakamahi')" class="p-2 text-emerald-700"><i class="fa-solid fa-person-walking block mb-1"></i>Log</button>`; }
+        function saveNewCase() { const n=getValue('new-name'), k=getValue('new-kura'), d=getValue('new-doc-link'); if(n&&k&&d){ cases.push({id:Date.now(), name:n, kura:k, docUrl:d, status:'active'}); saveData(); closeModal(); showHome(); } else alert("All fields required."); }
+        function toggleArchived() { showArchived = !showArchived; showHome(); }
+        function archiveCase(id) { if(confirm("Archive?")) { cases.find(c=>c.id===id).status='archived'; saveData(); showHome(); }}
+        function unarchiveCase(id) { cases.find(c=>c.id===id).status='active'; saveData(); showHome(); }
+        function deleteCase(id) { if(confirm("Delete?")) { cases = cases.filter(c=>c.id!==id); saveData(); showHome(); }}
         showHome();
-
     </script>
-
 </body>
-
 </html>
